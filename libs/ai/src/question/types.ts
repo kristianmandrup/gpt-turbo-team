@@ -11,7 +11,7 @@ export type OutputOpts = {
 
 export type GetPrompt = () => Promise<string | undefined>
 
-export type GetSystemRequestMessage = (message: string, opts?: RunTaskOpts) => ChatCompletionRequestMessage
+export type GetSystemRequestMessage = (message?: string, opts?: RunTaskOpts) => ChatCompletionRequestMessage
 
 export type CreateGetSystemRequestMessage = (opts: CreateSystemMsgOpts) => GetSystemRequestMessage
 
@@ -30,5 +30,10 @@ export type RunTaskOpts = {
 
 export type RunTaskParams = {
   task: IPhaseTask
+  opts: RunTaskOpts
+}
+
+export type RunTaskMessageParams = {
+  taskMessage: string
   opts: RunTaskOpts
 }
