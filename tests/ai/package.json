@@ -1,0 +1,21 @@
+{
+  "name": "test-ai",
+  "private": true,
+  "sideEffects": false,
+  "keywords": [
+    "AI",
+    "LLM",
+    "tooling"
+  ],
+  "author": "",
+  "license": "ISC",
+  "main": "dist/index.js",
+  "scripts": {
+    "test:unit": "jest",
+    "build": "rm -rf dist && tsc",
+    "install": "pnpm install"
+  },
+  "dependencies": {
+    "@gpt-team/ai": "workspace:*"
+  }
+}

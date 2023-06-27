@@ -1,0 +1,15 @@
+export const queueNames = {
+    all: 'all',
+    architect: 'architect',
+    product: 'product',
+    project: 'project',
+    ui: 'ui',
+    frontend: 'frontend',
+    backend: 'backend',
+    devops: 'devops',
+    api: 'api',
+    services: 'services',
+    db: 'db',
+    deliverables: 'deliverables',
+    status: 'status',
+}  
