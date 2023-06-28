@@ -7,26 +7,28 @@ import {
 } from 'openai'
 import 'dotenv/config'
 import { NextOpts } from './types'
+import { fsystem, fuser } from '../question'
 
 export const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
+export type StartParams = { system: string[]; user: string[] }
+
 export class AIToolkit {
   private client: any
-  private kwargs: Record<string, any>
+  private opts: Record<string, any>
 
-  constructor(kwargs: Record<string, any>, config?: Configuration) {
+  constructor(opts: Record<string, any>, config?: Configuration) {
     console.log('configure OpenAIAPI with', config || configuration)
     this.client = new OpenAIApi(configuration)
-    this.kwargs = kwargs
+    this.opts = opts
   }
 
-  public start(system: string, user: string): Promise<ChatCompletionRequestMessage[]> {
-    const messages: ChatCompletionRequestMessage[] = [
-      { role: 'system', content: system },
-      { role: 'user', content: user },
-    ]
+  public start({ system, user }: StartParams): Promise<ChatCompletionRequestMessage[]> {
+    const sysMessages = system.map(fsystem)
+    const userMessages = user.map(fuser)
+    const messages: ChatCompletionRequestMessage[] = [...(sysMessages || []), ...(userMessages || [])]
 
     return this.next({ messages })
   }
@@ -34,25 +36,42 @@ export class AIToolkit {
   public async next({ messages, prompt, output }: NextOpts): Promise<ChatCompletionRequestMessage[]> {
     // TODO: use output if present
     if (prompt) {
-      messages = messages.concat([{ role: 'user', content: prompt }])
+      const userPromptMessage = fuser(prompt)
+      messages.push(userPromptMessage)
     }
-    console.log('next', { messages, prompt })
-    console.log('call OpenAIAPI')
-    let response
+    const response = await this.aiResponse(messages)
+
+    let data: CreateChatCompletionResponse = response.data
+    const chat = this.parseResponses(data)
+    const assistantMessage = this.assistantRequest(chat)
+    messages.push(assistantMessage)
+    return messages
+  }
+
+  chatRequestFor(messages: ChatCompletionRequestMessage[]): CreateChatCompletionRequest {
+    return {
+      messages,
+      model: this.opts.model || 'gpt-3.5-turbo',
+      ...this.opts,
+    }
+  }
+
+  async aiResponse(messages: ChatCompletionRequestMessage[]) {
     try {
-      const chatRequest: CreateChatCompletionRequest = {
-        messages: messages,
-        model: this.kwargs.model || 'gpt-3.5-turbo',
-        ...this.kwargs,
-      }
+      const chatRequest = this.chatRequestFor(messages)
       console.log('calling createChatCompletion with:', chatRequest)
-      response = await this.client.createChatCompletion(chatRequest)
+      return await this.client.createChatCompletion(chatRequest)
     } catch (ex) {
       console.error(ex)
       throw ex
     }
-    let data: CreateChatCompletionResponse = response.data
+  }
 
+  assistantRequest(chat: string[]): ChatCompletionRequestMessage {
+    return { role: 'assistant', content: chat.join('') }
+  }
+
+  parseResponses(data: CreateChatCompletionResponse) {
     console.log('parsing responses', data.choices)
     const chat: string[] = []
     for (const chunk of data.choices) {
@@ -61,7 +80,6 @@ export class AIToolkit {
       console.log(delta)
       chat.push(delta)
     }
-
-    return messages.concat([{ role: 'assistant', content: chat.join('') }])
+    return chat
   }
 }
