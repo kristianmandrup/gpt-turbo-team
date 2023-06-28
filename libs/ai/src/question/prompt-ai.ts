@@ -4,7 +4,7 @@ import { Control, getControl } from './command'
 import { AiResponse, createGetAiResponse } from '../response/response'
 import { getLastResponseMessage } from '../message'
 import { getUserMessage } from './user'
-import { AbortError } from './exceptions'
+import { AbortError, AbortEvent } from './exceptions'
 
 export type PromptAiOpts = {
   aiResponse?: AiResponse
@@ -20,7 +20,7 @@ export const promptAiAndUser = async ({
   messages,
   prompt,
   opts,
-}: PromptAiOpts): Promise<ChatCompletionRequestMessage[] | Control> => {
+}: PromptAiOpts): Promise<ChatCompletionRequestMessage[]> => {
   try {
     const getAiResponse = createGetAiResponse(opts)
     if (!getAiResponse) {
@@ -30,7 +30,9 @@ export const promptAiAndUser = async ({
     const aiGeneratedContent = getLastResponseMessage(responseMessages)
     // Ai can terminate further processing by saying no to needing further clarification from user
     let control = getControl(aiGeneratedContent)
-    if (control) return control
+    if (control) {
+      throw new AbortEvent('AI completed')
+    }
     // User can terminate further processing by writing command to abort (q = quit)
     const userMessage = await getUserMessage(opts)
     userMessage && messages.push(userMessage)

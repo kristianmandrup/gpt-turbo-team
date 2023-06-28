@@ -9,9 +9,11 @@ export type OutputOpts = {
   ext?: string
 }
 
+export type RunTaskMessage = (params: RunTaskMessageParams) => Promise<ChatCompletionRequestMessage[]>
+
 export type GetPrompt = () => Promise<string | undefined>
 
-export type GetSystemRequestMessage = (message?: string, opts?: RunTaskOpts) => ChatCompletionRequestMessage
+export type GetSystemRequestMessage = (message?: string, opts?: RunTaskOpts) => ChatCompletionRequestMessage[]
 
 export type CreateGetSystemRequestMessage = (opts: CreateSystemMsgOpts) => GetSystemRequestMessage
 
@@ -19,13 +21,17 @@ export type CreateSystemMsgOpts = {
   ai?: IAIToolkit
 }
 
+export type RunTaskFn = (opts: RunTaskOpts) => Promise<ChatCompletionRequestMessage[]>
+
 export type RunTaskOpts = {
   ai?: IAIToolkit
   output?: OutputOpts
   inputs?: string[]
   getPrompt?: GetPrompt
-  getSystemRequestMessage?: GetSystemRequestMessage
+  getSystemRequestMessages?: GetSystemRequestMessage
+  runTaskMessage?: RunTaskMessage
   config?: any
+  messages?: ChatCompletionRequestMessage[]
 }
 
 export type RunTaskParams = {
