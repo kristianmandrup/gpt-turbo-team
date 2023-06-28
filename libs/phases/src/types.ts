@@ -1,7 +1,7 @@
 export interface IPhases {
   isDone(): boolean
   setDone(): void
-  loadPhases(): Promise<void>
+  loadPhases?: () => Promise<void>
   nextPhase(): Promise<IPhase | undefined>
   nextTask(): Promise<IPhaseTask | undefined>
 }
@@ -10,11 +10,11 @@ export interface IPhase {
   isDone(): boolean
   setDone(): void
   getGoal(): string
-  loadGoal(): Promise<void>
+  loadGoal?: () => Promise<void>
   nextTask(): Promise<IPhaseTask | undefined>
 }
 export interface IPhaseTasks {
-  loadTasks(): Promise<void>
+  loadTasks?: () => Promise<void>
   nextTask(): Promise<IPhaseTask | undefined>
 }
 export interface IPhaseTask {

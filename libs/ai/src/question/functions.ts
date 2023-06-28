@@ -1,6 +1,10 @@
 import { ChatCompletionRequestMessage } from 'openai'
-import { CreateSystemMsgOpts } from './types'
 import { AbortError } from './exceptions'
+import { IAIToolkit } from '../ai'
+
+export type CreateSystemMsgOpts = {
+  ai?: IAIToolkit
+}
 
 export const fsystem = (msg: string): ChatCompletionRequestMessage => {
   return { role: 'system', content: msg }

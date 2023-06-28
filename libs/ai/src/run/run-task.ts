@@ -1,6 +1,6 @@
-import { RunTaskParams as RunTaskParams } from './types'
 import { ChatCompletionRequestMessage } from 'openai'
 import { runTaskMessage } from './run-task-message'
+import { RunTaskParams } from './types'
 
 export async function runTask({ task, opts }: RunTaskParams): Promise<ChatCompletionRequestMessage[]> {
   console.log('run task')

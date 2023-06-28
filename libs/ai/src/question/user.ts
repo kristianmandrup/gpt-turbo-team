@@ -1,6 +1,6 @@
 import { ChatCompletionRequestMessage } from 'openai'
 import { Control } from './command'
-import { askQuestion } from './question'
+import { AskQuestionFn, askQuestion } from './question'
 import { AbortEvent } from './exceptions'
 
 export type AskUser = () => Promise<ChatCompletionRequestMessage | Control>
@@ -24,6 +24,7 @@ export const $createAskUser = (opts: any) => async (): Promise<ChatCompletionReq
 
 export type HandleUserOpts = {
   askUser?: AskUser
+  askQuestion?: AskQuestionFn
 }
 
 export type HandleUserParams = {

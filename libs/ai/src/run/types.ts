@@ -1,6 +1,7 @@
 import { IPhaseTask } from '@gpt-team/phases'
 import { IAIToolkit } from '../ai'
 import { ChatCompletionRequestMessage } from 'openai'
+import { CreateSystemMsgOpts } from '../question'
 
 export type OutputOpts = {
   name: string
@@ -16,10 +17,6 @@ export type GetPrompt = () => Promise<string | undefined>
 export type GetSystemRequestMessage = (message?: string, opts?: RunTaskOpts) => ChatCompletionRequestMessage[]
 
 export type CreateGetSystemRequestMessage = (opts: CreateSystemMsgOpts) => GetSystemRequestMessage
-
-export type CreateSystemMsgOpts = {
-  ai?: IAIToolkit
-}
 
 export type RunTaskFn = (opts: RunTaskOpts) => Promise<ChatCompletionRequestMessage[]>
 
